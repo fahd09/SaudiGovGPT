@@ -10,16 +10,17 @@ from langchain.embeddings import OpenAIEmbeddings
 # if 'secret' not in st.session_state:
 #     st.session_state.secret = os.environ['OPENAI_API_KEY']
 
+openai_api_key = ''
 user_secret = st.text_input(label = ":blue[OpenAI API key]", placeholder = "Paste your openAI API key, sk-", type = "password")
-
 if user_secret:
-    openai.api_key = user_secret
+    # openai.api_key = user_secret
+    openai_api_key = user_secret
     st.session_state.secret = user_secret
 
 
 # we use openai embeddings  (best result so far for Arabic text)
 # although I need to test other options
-model = OpenAIEmbeddings()
+model = OpenAIEmbeddings(openai_api_key = openai_api_key)
 
 services = np.load('data/data_2k.npz', allow_pickle=True)['services']
 embeddings = np.load('data/embeddings_2k.npz')['embeddings'].astype(np.float32)
