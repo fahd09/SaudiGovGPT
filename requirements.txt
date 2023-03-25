@@ -1,0 +1,5 @@
+numpy
+faiss-cpu
+openai
+streamlit
+langchain
