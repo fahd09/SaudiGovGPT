@@ -20,8 +20,11 @@ st.markdown("<h2 style='text-align:center'>🤖🇸🇦 Saudi Gov GPT 🇸🇦�
 st.markdown('''واجهة ذكية تجيب عن الأسئلة المتعلقة بمختلف الخدمات التي تقدمها القطاعات الحكومية في السعودية. اكتب السؤال بشكل مفصل قدر الإمكان حتى نجد الخدمة المناسبة بسهولة.''')
 user_input = st.text_area("", placeholder = "اسألني عن أي خدمة حكومية...", key="input")
 
+
+user_secret = os.environ['OPENAI_API_KEY']      
+
 try:
-    if user_secret == '':
+    if user_secret == '':        
         raise ValueError()
     else:
         if user_secret == os.environ['SECRET_PASS']:
