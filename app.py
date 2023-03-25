@@ -6,22 +6,21 @@ import streamlit as st
 from langchain.embeddings import OpenAIEmbeddings
 
 
-## uncomment if running locally and you have OPENAI_API_KEY
-# if 'secret' not in st.session_state:
-#     st.session_state.secret = os.environ['OPENAI_API_KEY']
+if 'secret' not in st.session_state and 'OPENAI_API_KEY' not in os.environ:
+    user_secret = st.text_input(label = ":blue[OpenAI API key]", placeholder = "Paste your openAI API key, sk-", type = "password")
+elif 'secret' not in st.session_state and 'OPENAI_API_KEY' in os.environ:
+    user_secret = os.environ['OPENAI_API_KEY']
 
-openai_api_key = 'sk-XXXXXXXXXXXXXXXXX'
-
-user_secret = st.text_input(label = ":blue[OpenAI API key]", placeholder = "Paste your openAI API key, sk-", type = "password")
 if user_secret:
-    # openai.api_key = user_secret
-    openai_api_key = user_secret
+    openai.api_key = user_secret
     st.session_state.secret = user_secret
+else:
+    openai.api_key = 'sk-XXXXXXXX'
 
 
 # we use openai embeddings  (best result so far for Arabic text)
 # although I need to test other options
-model = OpenAIEmbeddings(openai_api_key = openai_api_key)
+model = OpenAIEmbeddings()
 
 services = np.load('data/data_2k.npz', allow_pickle=True)['services']
 embeddings = np.load('data/embeddings_2k.npz')['embeddings'].astype(np.float32)
