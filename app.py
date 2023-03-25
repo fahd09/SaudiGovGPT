@@ -6,6 +6,7 @@ import streamlit as st
 from langchain.embeddings import OpenAIEmbeddings
 
 
+st.set_page_config(page_title='Saudi GPT 🇸🇦')
 
 # if 'secret' not in st.session_state:
 #     st.session_state.secret = os.environ['OPENAI_API_KEY']
