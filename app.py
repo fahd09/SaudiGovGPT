@@ -6,11 +6,10 @@ import streamlit as st
 from langchain.embeddings import OpenAIEmbeddings
 
 
-if 'secret' not in st.session_state and 'OPENAI_API_KEY' not in os.environ:
-    user_secret = st.text_input(label = ":blue[OpenAI API key]", placeholder = "Paste your openAI API key, sk-", type = "password")
-elif 'secret' not in st.session_state and 'OPENAI_API_KEY' in os.environ:
-    user_secret = os.environ['OPENAI_API_KEY']
-
+# if 'secret' not in st.session_state and 'OPENAI_API_KEY' not in os.environ:
+#     user_secret = st.text_input(label = ":blue[OpenAI API key]", placeholder = "Paste your openAI API key, sk-", type = "password")
+# elif 'secret' not in st.session_state and 'OPENAI_API_KEY' in os.environ:
+user_secret = os.environ['OPENAI_API_KEY']
 if user_secret:
     openai.api_key = user_secret
     st.session_state.secret = user_secret
