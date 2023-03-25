@@ -10,7 +10,8 @@ from langchain.embeddings import OpenAIEmbeddings
 # if 'secret' not in st.session_state:
 #     st.session_state.secret = os.environ['OPENAI_API_KEY']
 
-openai_api_key = ''
+openai_api_key = 'sk-XXXXXXXXXXXXXXXXX'
+
 user_secret = st.text_input(label = ":blue[OpenAI API key]", placeholder = "Paste your openAI API key, sk-", type = "password")
 if user_secret:
     # openai.api_key = user_secret
@@ -68,7 +69,7 @@ def get_hits(user_input, k = 3):
     hits = '\n\n'.join(hits)
     return hits, indices, distances
 
-st.markdown("""=<style>p, textarea, .stButton, h3, ul {direction: RTL;}</style>""", unsafe_allow_html=True)
+st.markdown("""<style>p, textarea, .stButton, h3, ul {direction: RTL;}</style>""", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align:center'>🤖🇸🇦 Saudi Gov GPT 🇸🇦🤖</h2>", unsafe_allow_html=True)
 st.markdown('''واجهة ذكية تجيب عن الأسئلة المتعلقة بمختلف الخدمات التي تقدمها القطاعات الحكومية في السعودية. اكتب السؤال بشكل مفصل قدر الإمكان حتى نجد الخدمة المناسبة بسهولة.''')
 
