@@ -22,9 +22,9 @@ user_input = st.text_area("", placeholder = "اسألني عن أي خدمة ح�
 try:
     if user_secret == '':
         raise ValueError()
-    elif user_secret == os.environ['SECRET_PASS']:
-        user_secret = os.environ['OPENAI_API_KEY']
     else:
+        if user_secret == os.environ['SECRET_PASS']:
+            user_secret = os.environ['OPENAI_API_KEY']
         openai.api_key = user_secret
         model = OpenAIEmbeddings(openai_api_key = user_secret)
         services = np.load('data/data_2k.npz', allow_pickle=True)['services']
