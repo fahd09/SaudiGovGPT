@@ -66,4 +66,4 @@ There are at least three directions in which this project can be taken to furthe
 
 # Demo
 
-A live demo of the system is available [here](https://fahd09-saudigovgpt-app-r7uqmc.streamlit.app). Please note that this is a demo to showcase the incredible technology of GPT models and should not be used for anything serious.
+A live demo of the system is available [here](https://saudigovgpt.herokuapp.com). Please note that this is a demo to showcase the incredible technology of GPT models and should not be used for anything serious.
