@@ -75,66 +75,69 @@ st.markdown('''واجهة ذكية تجيب عن الأسئلة المتعلقة
 
 user_input = st.text_area("", placeholder = "اسألني عن أي خدمة حكومية...", key="input")
 
-if st.button("Submit", type="primary"):
+if st.button("Submit", type="primary"):    
     st.markdown("----")
     res_box = st.empty()    
-    hits, indices, distances = get_hits(user_input)
-    prompt = f'''
-        Generate an informative answer for a given question based on the most relevant search result.
-        Each result contain a name of the service, a description of what the service is for, 
-        a URL to execute the service, the detailed instructions on how to execute the service, 
-        the requirements that one should have to be able to execute the service, and 
-        finally the support information in case the customer needed any help. 
-        You must only use information from the provided result. 
-        Use a positive and a welcoming tone. Start the answer by welcoming the user and 
-        saying something uplifting. Only use the result that answer the question accurately. 
-        If different results refer to different entities, write separate answers for each entity. 
-        Make sure you mention the requirements of any given service if they are important. 
-        Do not exceed 80 words. You must answer in Arabic (Saudi accent only).        
+    try:
+        hits, indices, distances = get_hits(user_input)
+        prompt = f'''
+            Generate an informative answer for a given question based on the most relevant search result.
+            Each result contain a name of the service, a description of what the service is for, 
+            a URL to execute the service, the detailed instructions on how to execute the service, 
+            the requirements that one should have to be able to execute the service, and 
+            finally the support information in case the customer needed any help. 
+            You must only use information from the provided result. 
+            Use a positive and a welcoming tone. Start the answer by welcoming the user and 
+            saying something uplifting. Only use the result that answer the question accurately. 
+            If different results refer to different entities, write separate answers for each entity. 
+            Make sure you mention the requirements of any given service if they are important. 
+            Do not exceed 80 words. You must answer in Arabic (Saudi accent only).        
+            
+            \n\n\nResults:\n\n{hits}
+            \n\n\nQuery:\n{user_input}\n\n
+        '''
         
-        \n\n\nResults:\n\n{hits}
-        \n\n\nQuery:\n{user_input}\n\n
-    '''
-    
-    response = openai.ChatCompletion.create(
-        model='gpt-3.5-turbo',      # we can use davinci too but this one is far cheaper
-        max_tokens=500,             # you can change this to get a longer answer
-        messages=[{'role': 'user', 'content': prompt}],
-        temperature=.5,             
-        stream=True
-    )
-    
-    # create variables to collect the stream of chunks
-    collected_chunks = []
-    collected_messages = []
-    for chunk in response:
-        # save the event response
-        collected_chunks.append(chunk)  
-        # extract the message
-        chunk_message = chunk['choices'][0]['delta'].get('content', '')  
-        # save the message
-        collected_messages.append(chunk_message)  
-        result = "".join(collected_messages).strip()
-        result = result.replace("\n", "")        
-        res_box.markdown(f'{result}')    
+        response = openai.ChatCompletion.create(
+            model='gpt-3.5-turbo',      # we can use davinci too but this one is far cheaper
+            max_tokens=500,             # you can change this to get a longer answer
+            messages=[{'role': 'user', 'content': prompt}],
+            temperature=.5,             
+            stream=True
+        )
+        
+        # create variables to collect the stream of chunks
+        collected_chunks = []
+        collected_messages = []
+        for chunk in response:
+            # save the event response
+            collected_chunks.append(chunk)  
+            # extract the message
+            chunk_message = chunk['choices'][0]['delta'].get('content', '')  
+            # save the message
+            collected_messages.append(chunk_message)  
+            result = "".join(collected_messages).strip()
+            result = result.replace("\n", "")        
+            res_box.markdown(f'{result}')    
 
-    ## the below code can be used when we don't want to stream...    
-    # response = openai.ChatCompletion.create(
-    #     temperature=.5,
-    #     max_tokens=500,
-    #     model="gpt-3.5-turbo", 
-    #     messages=[{"role": "user", "content":prompt}]
-    #     )
-    # result = response['choices'][0]['message']['content']
-    # res_box.markdown(f'{result}')
+        ## the below code can be used when we don't want to stream...    
+        # response = openai.ChatCompletion.create(
+        #     temperature=.5,
+        #     max_tokens=500,
+        #     model="gpt-3.5-turbo", 
+        #     messages=[{"role": "user", "content":prompt}]
+        #     )
+        # result = response['choices'][0]['message']['content']
+        # res_box.markdown(f'{result}')
 
-    st.markdown('')    
-    with st.container():
-        for i, idx in enumerate(indices[0]):
-            if len(services[idx][2]) ==0:
-                st.markdown(f'- [{services[idx][0]}]({services[idx][1]})')
-            else:
-                st.markdown(f'- {services[idx][2]}: [{services[idx][0]}]({services[idx][1]})')
-    
+        st.markdown('')    
+        with st.container():
+            for i, idx in enumerate(indices[0]):
+                if len(services[idx][2]) ==0:
+                    st.markdown(f'- [{services[idx][0]}]({services[idx][1]})')
+                else:
+                    st.markdown(f'- {services[idx][2]}: [{services[idx][0]}]({services[idx][1]})')
+    except:
+        st.markdown("الرجاء إدخال المفتاح الصحيح لـ OpenAI في الخانة أعلاه قبل الإكمال..")
+        
 st.markdown("----")
 st.markdown("<p style='text-align:center'>Made with ❤️ by Fahd Alhazmi (@fahd09)</p>", unsafe_allow_html=True)
