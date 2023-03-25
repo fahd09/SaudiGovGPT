@@ -20,13 +20,12 @@ st.markdown('''واجهة ذكية تجيب عن الأسئلة المتعلقة
 user_input = st.text_area("", placeholder = "اسألني عن أي خدمة حكومية...", key="input")
 
 try:
-    if (user_secret == '') or (user_secret != os.environ['SECRET_PASS']):    
-        raise ValueError()   
-    else:
-        # pass
+    if user_secret == '':
+        raise ValueError()
+    elif user_secret == os.environ['SECRET_PASS']:
         user_secret = os.environ['OPENAI_API_KEY']
+    else:
         openai.api_key = user_secret
-
         model = OpenAIEmbeddings(openai_api_key = user_secret)
         services = np.load('data/data_2k.npz', allow_pickle=True)['services']
         embeddings = np.load('data/embeddings_2k.npz')['embeddings'].astype(np.float32)
