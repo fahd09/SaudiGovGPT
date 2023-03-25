@@ -6,31 +6,37 @@ import streamlit as st
 from langchain.embeddings import OpenAIEmbeddings
 
 
-# if 'secret' not in st.session_state and 'OPENAI_API_KEY' not in os.environ:
-user_secret = st.text_input(label = ":blue[OpenAI API key]", placeholder = "Paste your openAI API key, sk-", type = "password")
-# elif 'secret' not in st.session_state and 'OPENAI_API_KEY' in os.environ:
-if len(user_secret) >0 and len(user_secret) <= 10: 
-    if user_secret == os.environ['SECRET_PASS']:
+
+# if 'secret' not in st.session_state:
+#     st.session_state.secret = os.environ['OPENAI_API_KEY']
+user_secret = st.text_input(label = ":blue[OpenAI API key]", placeholder = "Paste openAI API key and then press Enter", type = "password")
+if user_secret:
+    openai.api_key = user_secret
+    st.session_state.secret = user_secret
+
+st.markdown("""<style>p, textarea, .stButton, h3, ul {direction: RTL;}</style>""", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align:center'>🤖🇸🇦 Saudi Gov GPT 🇸🇦🤖</h2>", unsafe_allow_html=True)
+st.markdown('''واجهة ذكية تجيب عن الأسئلة المتعلقة بمختلف الخدمات التي تقدمها القطاعات الحكومية في السعودية. اكتب السؤال بشكل مفصل قدر الإمكان حتى نجد الخدمة المناسبة بسهولة.''')
+user_input = st.text_area("", placeholder = "اسألني عن أي خدمة حكومية...", key="input")
+
+try:
+    if (user_secret == '') or (user_secret != os.environ['SECRET_PASS']):    
+        raise ValueError()   
+    else:
+        # pass
         user_secret = os.environ['OPENAI_API_KEY']
         openai.api_key = user_secret
-        st.session_state.secret = user_secret
-elif len(user_secret) > 10:
-    openai.api_key = user_secret
-else: # empty    
-    openai.api_key = 'sk-XXXXXXXX'
 
+        model = OpenAIEmbeddings(openai_api_key = user_secret)
+        services = np.load('data/data_2k.npz', allow_pickle=True)['services']
+        embeddings = np.load('data/embeddings_2k.npz')['embeddings'].astype(np.float32)
+        # todo: we can save these matrices to optimize inference but not a big issue as it is only done once... 
+        embeddings_normalized = embeddings / np.linalg.norm(embeddings, axis=1)[:, np.newaxis]
+        index = faiss.IndexFlatL2(embeddings_normalized.shape[1])
+        index.add(embeddings_normalized)        
+except:
+    pass
 
-# we use openai embeddings  (best result so far for Arabic text)
-# although I need to test other options
-model = OpenAIEmbeddings(openai_api_key = user_secret)
-
-services = np.load('data/data_2k.npz', allow_pickle=True)['services']
-embeddings = np.load('data/embeddings_2k.npz')['embeddings'].astype(np.float32)
-
-# todo: we can save these matrices to optimize inference but not a big issue as it is only done once... 
-embeddings_normalized = embeddings / np.linalg.norm(embeddings, axis=1)[:, np.newaxis]
-index = faiss.IndexFlatL2(embeddings_normalized.shape[1])
-index.add(embeddings_normalized)
 
 def embed_text(text):    
     return model.embed_query(text)
@@ -70,11 +76,6 @@ def get_hits(user_input, k = 3):
     hits = '\n\n'.join(hits)
     return hits, indices, distances
 
-st.markdown("""<style>p, textarea, .stButton, h3, ul {direction: RTL;}</style>""", unsafe_allow_html=True)
-st.markdown("<h2 style='text-align:center'>🤖🇸🇦 Saudi Gov GPT 🇸🇦🤖</h2>", unsafe_allow_html=True)
-st.markdown('''واجهة ذكية تجيب عن الأسئلة المتعلقة بمختلف الخدمات التي تقدمها القطاعات الحكومية في السعودية. اكتب السؤال بشكل مفصل قدر الإمكان حتى نجد الخدمة المناسبة بسهولة.''')
-
-user_input = st.text_area("", placeholder = "اسألني عن أي خدمة حكومية...", key="input")
 
 if st.button("Submit", type="primary"):    
     st.markdown("----")
@@ -138,7 +139,7 @@ if st.button("Submit", type="primary"):
                 else:
                     st.markdown(f'- {services[idx][2]}: [{services[idx][0]}]({services[idx][1]})')
     except:
-        st.markdown("الرجاء إدخال المفتاح الصحيح لـ OpenAI في الخانة أعلاه قبل الإكمال..")
+        st.markdown("الرجاء إدخال مفتاح الـ OpenAI في الخانة أعلاه قبل الإكمال..")
         
 st.markdown("----")
 st.markdown("<p style='text-align:center'>Made with ❤️ by Fahd Alhazmi (@fahd09)</p>", unsafe_allow_html=True)
