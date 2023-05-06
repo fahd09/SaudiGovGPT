@@ -63,7 +63,7 @@ def get_hits(user_input, k = 3):
         #           we can experiment with what best make sense 
         hits.append(
             ('Name:' + str(services[idx][0])
-             + '\nURL: ' + str(services[idx][1])
+             + '\nURL: ' + str(services[idx][10])
             #  + '\nAgency: ' + str(services[idx][2])
              + '\nDescription: ' + str(services[idx][3])
             #  + '\nCustomers: ' + str(services[idx][4])
@@ -71,6 +71,7 @@ def get_hits(user_input, k = 3):
             #  + '\nCost: ' + str(services[idx][6])
              + '\nSteps: ' + str(services[idx][7])
              + '\nRequirements: ' + str(services[idx][8])
+            #  + '\nSupport: ' + str(services[idx][10])
             #  + '\nSupport: ' + str(services[idx][9])
             #  + '\nDocuments: ' + str(services[idx][11])
              )
